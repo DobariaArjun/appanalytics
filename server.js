@@ -22,10 +22,10 @@ function sendNotification(title, body, device_token1) {
         if (err) console.error(err);
         else {
             console.log(response);
-            res.json({
-                status: "1",
-                message: response
-            });
+            // res.json({
+            //     status: "1",
+            //     message: response
+            // });
         }
     });
 }
