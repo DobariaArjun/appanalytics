@@ -17,7 +17,7 @@ function sendNotification(title, body, device_token1) {
             body: body
         }
     });
-    var regTokens = [device_token1];
+    var regTokens = device_token1;
     sender.send(message, {registrationTokens: regTokens}, function (err, response) {
         if (err) console.error(err);
         else {
@@ -173,10 +173,29 @@ client.connect((err, db) => {
                         message: "No user available in this country"
                     });
                 } else {
-                    for(var i = 0; i<data.size; i++){
+                    for(i = 0; i<data.length; i++){
                         DeviceTokenArray.push(data[i]["DeviceToken"])
                     }
-                    sendNotification(req.body.title,req.body.body,DeviceTokenArray)
+                    // console.log(DeviceTokenArray)
+                    // sendNotification(req.body.title,req.body.body,DeviceTokenArray)
+                    var message = new gcm.Message({
+                        priority: 'high',
+                        notification: {
+                            title: req.body.title,
+                            body: req.body.body
+                        }
+                    });
+                    // var regTokens = device_token1;
+                    sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
+                        if (err) console.error(err);
+                        else {
+                            // console.log(response);
+                            res.json({
+                                status: "1",
+                                message: response
+                            });
+                        }
+                    });
                 }
             });
         });
