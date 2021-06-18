@@ -1,0 +1,23 @@
+{
+  "name": "com.tritech.android.api",
+  "version": "1.0.0",
+  "description": "Android api to get user information",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Arjun Dobaria",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "is-empty": "^1.2.0",
+    "mongodb": "^3.6.9",
+    "node-fetch": "^2.6.1",
+    "node-gcm": "^1.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}

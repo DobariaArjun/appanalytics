@@ -1,0 +1,193 @@
+const MongoClient = require('mongodb').MongoClient;
+const bodyParser = require('body-parser');
+const express = require('express');
+const isEmpty = require('is-empty');
+const gcm = require('node-gcm');
+const app = express();
+
+const uri = "mongodb+srv://ArjunDobaria:Pravin143@mantratechnolog.bjxu8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
+const sender = new gcm.Sender('AAAA1rkBsww:APA91bFmNosRZRoLPgH-yDi7_LQ5l9ufjSbR6ivsd2TaN3KVeaE6f_k3GBAfHekIUzyxz68OuNsSicWnko_SrbCU73jeEVu9vuZQh9aAS5-aN0qgnz7oVansTNRbKPWkwFW2SBiZF5nA');
+
+function sendNotification(title, body, device_token1) {
+    var message = new gcm.Message({
+        priority: 'high',
+        notification: {
+            title: title,
+            body: body
+        }
+    });
+    var regTokens = [device_token1];
+    sender.send(message, {registrationTokens: regTokens}, function (err, response) {
+        if (err) console.error(err);
+        else {
+            console.log(response);
+        }
+    });
+}
+
+client.connect((err, db) => {
+    if (err)
+        console.log("Error while connecting to Mongo" + err);
+    else {
+        console.log("Connected to Mongo");
+        let dbo = db.db("TritechTechnoPoint");
+
+        app.post('/firstCall', (req, res) => {
+            let tempratureChecker = req.body.appName;
+            let dataCounter = dbo.collection(tempratureChecker).find({
+                'DeviceToken': req.body.deviceToken
+            }).toArray();
+            dataCounter.then((data) => {
+                if (isEmpty(data)) {
+                    //Create New
+                    let myObj = {
+                        UserCountry: req.body.userCountry,
+                        DeviceBrand: req.body.brand,
+                        DeviceToken: req.body.deviceToken,
+                        AppVersion: req.body.appVersion,
+                        ScreenResolustion: req.body.screenResolution
+                    };
+
+                    dbo.collection(tempratureChecker).insertOne(myObj, (err, result) => {
+                        if (err)
+                            res.json({
+                                status: "0",
+                                message: "Inserting fail in " + tempratureChecker
+                            });
+                        else {
+                            res.json({
+                                status: "1",
+                                message: "Data added successfully in " + tempratureChecker
+                            });
+                        }
+                    });
+                } else {
+                    dbo.collection(tempratureChecker).updateOne(
+                        {
+                            'DeviceToken': req.body.deviceToken
+                        },
+                        {
+                            $set: {
+                                "UserCountry": req.body.userCountry,
+                                "DeviceBrand": req.body.brand,
+                                "AppVersion": req.body.appVersion,
+                                "ScreenResolustion": req.body.screenResolution
+                            }
+                        }
+                    ).then((result) => {
+
+                        if (result['result']['n'] == 1)
+                            res.json({
+                                status: "1",
+                                message: "Data updated successfully in " + tempratureChecker
+                            });
+                        else
+                            res.json({
+                                status: "0",
+                                message: "Updating fail in " + tempratureChecker
+                            });
+                    }).catch((err) => {
+                        res.json({
+                            status: "0",
+                            message: "Updating fail in " + tempratureChecker
+                        });
+                    });
+                }
+            });
+        });
+
+        app.post('/activityView', (req, res) => {
+            let tempratureCheckerActivityView = req.body.appNameView;
+            let dataCounter = dbo.collection(tempratureCheckerActivityView).find({
+                'ActivityName': req.body.name
+            }).toArray();
+            dataCounter.then((data) => {
+                if (isEmpty(data)) {
+                    //Create New
+                    let myObj = {
+                        ActivityName: req.body.name,
+                        ActivityView: 1
+                    };
+
+                    dbo.collection(tempratureCheckerActivityView).insertOne(myObj, (err, result) => {
+                        if (err)
+                            res.json({
+                                status: "0",
+                                message: "Inserting fail in " + tempratureCheckerActivityView
+                            });
+                        else {
+                            res.json({
+                                status: "1",
+                                message: "Data added successfully in " + tempratureCheckerActivityView
+                            });
+                        }
+                    });
+                } else {
+                    var ActivityView = data[0]['ActivityView'];
+                    dbo.collection(tempratureCheckerActivityView).updateOne(
+                        {
+                            'ActivityName': req.body.name
+                        },
+                        {
+                            $set: {
+                                "ActivityView": ActivityView + 1
+                            }
+                        }
+                    ).then((result) => {
+
+                        if (result['result']['n'] == 1)
+                            res.json({
+                                status: "1",
+                                message: "Data updated successfully in " + tempratureCheckerActivityView
+                            });
+                        else
+                            res.json({
+                                status: "0",
+                                message: "Updating fail in " + tempratureCheckerActivityView
+                            });
+                    }).catch((err) => {
+                        res.json({
+                            status: "0",
+                            message: "Updating fail in " + tempratureCheckerActivityView
+                        });
+                    });
+                }
+            });
+        });
+
+        app.post('/notification', (req, res) => {
+            let tempratureChecker = req.body.appName;
+            var DeviceTokenArray = []
+            let dataCounter = dbo.collection(tempratureChecker).find({
+                'UserCountry': req.body.userCountry
+            }).toArray();
+            dataCounter.then((data) => {
+                if (isEmpty(data)) {
+                    res.json({
+                        status: "0",
+                        message: "No user available in this country"
+                    });
+                } else {
+                    for(var i = 0; i<data.size; i++){
+                        DeviceTokenArray.push(data[i]["DeviceToken"])
+                    }
+                    // sendNotification(req.body.title,req.body.body,DeviceTokenArray)
+                }
+            });
+        });
+
+        app.get('/', (req, res) => {
+            sendNotification("It's Urgent", "This is a notification that will be displayed if your app is in the background.", "fukrJXi-38E:APA91bFdglc8r9ocPMPmv9CX3qOjkBvUBVGG7iCP53vHF7pH76mXemulDRMi00lf7ugd5OveVJHcUv2mpWmfRoz64QIb9HuAP5ImTzrbqnv0cL2MqPuLQU5EIRkP33DEQQF4Z90Vz4wf")
+        });
+    }
+});
+
+let port = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.listen(port, () => {
+    console.log('Server is up and running on port number ' + port);
+});
