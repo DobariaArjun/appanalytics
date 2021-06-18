@@ -22,6 +22,10 @@ function sendNotification(title, body, device_token1) {
         if (err) console.error(err);
         else {
             console.log(response);
+            res.json({
+                status: "1",
+                message: response
+            });
         }
     });
 }
@@ -172,7 +176,7 @@ client.connect((err, db) => {
                     for(var i = 0; i<data.size; i++){
                         DeviceTokenArray.push(data[i]["DeviceToken"])
                     }
-                    // sendNotification(req.body.title,req.body.body,DeviceTokenArray)
+                    sendNotification(req.body.title,req.body.body,DeviceTokenArray)
                 }
             });
         });
