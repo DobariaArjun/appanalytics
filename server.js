@@ -9,27 +9,6 @@ const uri = "mongodb+srv://ArjunDobaria:Pravin143@mantratechnolog.bjxu8.mongodb.
 const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 const sender = new gcm.Sender('AAAA1rkBsww:APA91bFmNosRZRoLPgH-yDi7_LQ5l9ufjSbR6ivsd2TaN3KVeaE6f_k3GBAfHekIUzyxz68OuNsSicWnko_SrbCU73jeEVu9vuZQh9aAS5-aN0qgnz7oVansTNRbKPWkwFW2SBiZF5nA');
 
-function sendNotification(title, body, device_token1) {
-    var message = new gcm.Message({
-        priority: 'high',
-        notification: {
-            title: title,
-            body: body
-        }
-    });
-    var regTokens = device_token1;
-    sender.send(message, {registrationTokens: regTokens}, function (err, response) {
-        if (err) console.error(err);
-        else {
-            console.log(response);
-            // res.json({
-            //     status: "1",
-            //     message: response
-            // });
-        }
-    });
-}
-
 client.connect((err, db) => {
     if (err)
         console.log("Error while connecting to Mongo" + err);
@@ -173,11 +152,9 @@ client.connect((err, db) => {
                         message: "No user available in this country"
                     });
                 } else {
-                    for(i = 0; i<data.length; i++){
+                    for (i = 0; i < data.length; i++) {
                         DeviceTokenArray.push(data[i]["DeviceToken"])
                     }
-                    // console.log(DeviceTokenArray)
-                    // sendNotification(req.body.title,req.body.body,DeviceTokenArray)
                     var message = new gcm.Message({
                         priority: 'high',
                         notification: {
@@ -185,11 +162,9 @@ client.connect((err, db) => {
                             body: req.body.body
                         }
                     });
-                    // var regTokens = device_token1;
                     sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
                         if (err) console.error(err);
                         else {
-                            // console.log(response);
                             res.json({
                                 status: "1",
                                 message: response
@@ -201,7 +176,10 @@ client.connect((err, db) => {
         });
 
         app.get('/', (req, res) => {
-            sendNotification("It's Urgent", "This is a notification that will be displayed if your app is in the background.", "fukrJXi-38E:APA91bFdglc8r9ocPMPmv9CX3qOjkBvUBVGG7iCP53vHF7pH76mXemulDRMi00lf7ugd5OveVJHcUv2mpWmfRoz64QIb9HuAP5ImTzrbqnv0cL2MqPuLQU5EIRkP33DEQQF4Z90Vz4wf")
+            res.json({
+                status: "1",
+                message: "Server is running..!"
+            });
         });
     }
 });
