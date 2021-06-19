@@ -7,7 +7,7 @@ const app = express();
 
 const uri = "mongodb+srv://ArjunDobaria:Pravin143@mantratechnolog.bjxu8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
-const sender = new gcm.Sender('AAAA1rkBsww:APA91bFmNosRZRoLPgH-yDi7_LQ5l9ufjSbR6ivsd2TaN3KVeaE6f_k3GBAfHekIUzyxz68OuNsSicWnko_SrbCU73jeEVu9vuZQh9aAS5-aN0qgnz7oVansTNRbKPWkwFW2SBiZF5nA');
+const sender = new gcm.Sender('AAAAVpFD8ww:APA91bE-k8H9mXHaf_ilc_dUHAKsQABeWwVhtJd_4D1NLOAxy8N04nqLoN8k-S2-YuJSutyjmTZsyhbKvU1gcpcex9iSWJktJn_4Yf5F3GPal-6k4TQX3B31lGHiUpidQuLC3nO9v9Ky');
 
 client.connect((err, db) => {
     if (err)
