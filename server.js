@@ -163,7 +163,12 @@ client.connect((err, db) => {
                         }
                     });
                     sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
-                        if (err) console.error(err);
+                        if (err) {
+                            res.json({
+                                status: "0",
+                                message: err
+                            });
+                        }
                         else {
                             res.json({
                                 status: "1",
