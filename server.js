@@ -140,8 +140,10 @@ client.connect((err, db) => {
         });
 
         app.post('/notification', (req, res) => {
+            // SendNotification()
             let tempratureChecker = req.body.appName;
             var DeviceTokenArray = []
+
             let dataCounter = dbo.collection(tempratureChecker).find({
                 'UserCountry': req.body.userCountry
             }).toArray();
@@ -152,30 +154,54 @@ client.connect((err, db) => {
                         message: "No user available in this country"
                     });
                 } else {
+                    var data1 = data.length
+
                     for (i = 0; i < data.length; i++) {
+
                         DeviceTokenArray.push(data[i]["DeviceToken"])
+                        if (DeviceTokenArray.length == 1000) {
+                            console.log("1000 Notification")
+                            var message = new gcm.Message({
+                                priority: 'high',
+                                notification: {
+                                    title: req.body.title,
+                                    body: req.body.body
+                                }
+                            });
+                            sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    console.log(response)
+                                }
+                            });
+                            DeviceTokenArray = []
+                        } else if (i + 1 == data1) {
+                            console.log("last Notification")
+                            console.log(DeviceTokenArray.length)
+                            var message = new gcm.Message({
+                                priority: 'high',
+                                notification: {
+                                    title: req.body.title,
+                                    body: req.body.body
+                                }
+                            });
+                            sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
+                                if (err) {
+                                    res.json({
+                                        status: "0",
+                                        message: err
+                                    });
+                                } else {
+                                    res.json({
+                                        status: "1",
+                                        message: response
+                                    });
+                                }
+                            });
+                        }
+
                     }
-                    var message = new gcm.Message({
-                        priority: 'high',
-                        notification: {
-                            title: req.body.title,
-                            body: req.body.body
-                        }
-                    });
-                    sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
-                        if (err) {
-                            res.json({
-                                status: "0",
-                                message: err
-                            });
-                        }
-                        else {
-                            res.json({
-                                status: "1",
-                                message: response
-                            });
-                        }
-                    });
                 }
             });
         });
