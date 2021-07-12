@@ -140,7 +140,6 @@ client.connect((err, db) => {
         });
 
         app.post('/notification', (req, res) => {
-            // SendNotification()
             let tempratureChecker = req.body.appName;
             var DeviceTokenArray = []
             let dataCounter;
@@ -198,74 +197,70 @@ client.connect((err, db) => {
                                     }
                                 });
                             }
+
                         }
                     }
                 });
             } else {
 
-                var str = req.body.userCountry;
+                var finalCountry = req.body.userCountry;
 
-                var finalCountry = str.split(",");
+                dataCounter = dbo.collection(tempratureChecker).find({
+                    'UserCountry': finalCountry
+                }).toArray();
 
-                for (a = 0; a < finalCountry.length; a++) {
-                    countryName = finalCountry[a];
+                dataCounter.then((data) => {
+                    if (isEmpty(data)) {
+                        res.json({
+                            status: "0",
+                            message: "No user available in this country"
+                        });
+                    } else {
+                        var data1 = data.length
 
-                    dataCounter = dbo.collection(tempratureChecker).find({
-                        'UserCountry': countryName
-                    }).toArray();
+                        for (i = 0; i < data.length; i++) {
 
-                    dataCounter.then((data) => {
-                        if (isEmpty(data)) {
-                            res.json({
-                                status: "0",
-                                message: "No user available in this country"
-                            });
-                        } else {
-                            var data1 = data.length
-
-                            for (i = 0; i < data.length; i++) {
-
-                                DeviceTokenArray.push(data[i]["DeviceToken"])
-                                if (DeviceTokenArray.length == 1000) {
-                                    console.log("1000 Notification")
-                                    var message = new gcm.Message({
-                                        priority: 'high',
-                                        notification: {
-                                            title: req.body.title,
-                                            body: req.body.body
-                                        }
-                                    });
-                                    sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(response)
-                                        }
-                                    });
-                                    DeviceTokenArray = []
-                                } else if (i + 1 == data1) {
-                                    console.log("last Notification")
-                                    console.log(DeviceTokenArray.length)
-                                    var message = new gcm.Message({
-                                        priority: 'high',
-                                        notification: {
-                                            title: req.body.title,
-                                            body: req.body.body
-                                        }
-                                    });
-                                    sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
-                                        if (err) {
-                                            console.log(err)
-                                        } else {
-                                            console.log(response)
-                                        }
-                                    });
-                                }
-
+                            DeviceTokenArray.push(data[i]["DeviceToken"])
+                            if (DeviceTokenArray.length == 1000) {
+                                console.log("1000 Notification")
+                                var message = new gcm.Message({
+                                    priority: 'high',
+                                    notification: {
+                                        title: req.body.title,
+                                        body: req.body.body
+                                    }
+                                });
+                                sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(response)
+                                    }
+                                });
+                                DeviceTokenArray = []
+                            } else if (i + 1 == data1) {
+                                console.log("last Notification")
+                                console.log(DeviceTokenArray.length)
+                                var message = new gcm.Message({
+                                    priority: 'high',
+                                    notification: {
+                                        title: req.body.title,
+                                        body: req.body.body
+                                    }
+                                });
+                                sender.send(message, {registrationTokens: DeviceTokenArray}, function (err, response) {
+                                    if (err) {
+                                        console.log(err)
+                                    } else {
+                                        console.log(response)
+                                    }
+                                });
                             }
+
                         }
-                    });
-                }
+                    }
+                });
+
             }
         });
         app.get('/', (req, res) => {
