@@ -9,11 +9,14 @@ const uri = "mongodb+srv://ArjunDobaria:Pravin143@mantratechnolog.bjxu8.mongodb.
 const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 const sender = new gcm.Sender('AAAAVpFD8ww:APA91bE-k8H9mXHaf_ilc_dUHAKsQABeWwVhtJd_4D1NLOAxy8N04nqLoN8k-S2-YuJSutyjmTZsyhbKvU1gcpcex9iSWJktJn_4Yf5F3GPal-6k4TQX3B31lGHiUpidQuLC3nO9v9Ky');
 
+var BadTokenArray = []
+
 client.connect((err, db) => {
     if (err)
         console.log("Error while connecting to Mongo" + err);
     else {
         console.log("Connected to Mongo");
+
         let dbo = db.db("TritechTechnoPoint");
 
         app.post('/firstCall', (req, res) => {
@@ -140,6 +143,9 @@ client.connect((err, db) => {
         });
 
         app.post('/notification', (req, res) => {
+
+            // BadTokenArray = []
+
             let tempratureChecker = req.body.appName;
             var DeviceTokenArray = []
             let dataCounter;
@@ -263,12 +269,214 @@ client.connect((err, db) => {
 
             }
         });
+
         app.get('/', (req, res) => {
+
+            // console.log(BadTokenArray.length)
+            // for (w = 0; w < BadTokenArray.length; w++) {
+            //     // dbo.collection(tempratureChecker).removeOne({'DeviceToken': BadTokenArray[w]})
+            //
+            //     dbo.collection("Temperature Checker").removeOne({DeviceToken: BadTokenArray[w]}).then((data) => {
+            //         // res.json({status: "1", message: "success"});
+            //         console.log(data)
+            //     }).catch((dataerr) => {
+            //         // res.json({status: "3", message: "Internal server error"});
+            //         console.log(dataerr)
+            //     })
+            // }
+
             res.json({
                 status: "1",
                 message: "Server is running..!"
             });
+
+
         });
+
+        app.get('/ads', (req, res) => {
+
+            let tempratureChecker = "Ads";
+
+            // let dataCounter = dbo.collection(tempratureChecker).find({
+            //     'ActivityName': req.body.ActivityName
+            // }).toArray();
+            // dataCounter.then((data) => {
+
+            let dataCounter = dbo.collection(tempratureChecker).find({}).toArray();
+            var tempData = [];
+            dataCounter.then((data) => {
+                if(isEmpty(data)){
+                    res.json({
+                        status: "0",
+                        message: "No data found"
+                    });
+                }else{
+
+                    res.json({
+                        status: "1",
+                        message: data
+                    });
+                }
+            });
+
+            // });
+
+        });
+
+        app.post('/adsStart',(req,res) => {
+
+            let tempratureChecker = "Ads"
+
+            let dataCounter = dbo.collection(tempratureChecker).find({
+                'ActivityName': req.body.ActivityName
+            }).toArray();
+            dataCounter.then((data) => {
+                if (isEmpty(data)) {
+                    //Create New
+                    var ads={
+                        "1":req.body.one,
+                        "2":req.body.two,
+                        "3":req.body.three
+                    };
+
+                    let myObj = {
+                        ActivityName: req.body.ActivityName,
+                        Ads: ads
+                    };
+
+                    dbo.collection(tempratureChecker).insertOne(myObj, (err, result) => {
+                        if (err)
+                            res.json({
+                                status: "0",
+                                message: "Inserting fail in " + tempratureChecker
+                            });
+                        else {
+                            res.json({
+                                status: "1",
+                                message: "Data added successfully in " + tempratureChecker
+                            });
+                        }
+                    });
+                } else {
+
+                    var ads={
+                        "1":req.body.one,
+                        "2":req.body.two,
+                        "3":req.body.three
+                    };
+
+                    dbo.collection(tempratureChecker).updateOne(
+                        {
+                            'ActivityName': req.body.ActivityName
+                        },
+                        {
+                            $set: {
+                                "Ads": ads
+                            }
+                        }
+                    ).then((result) => {
+
+                        if (result['result']['n'] == 1)
+                            res.json({
+                                status: "1",
+                                message: "Data updated successfully in " + tempratureChecker
+                            });
+                        else
+                            res.json({
+                                status: "0",
+                                message: "Updating fail in " + tempratureChecker
+                            });
+                    }).catch((err) => {
+                        res.json({
+                            status: "0",
+                            message: "Updating fail in " + tempratureChecker
+                        });
+                    });
+                }
+            });
+
+        })
+
+        app.post('/adsCity',(req,res) => {
+
+            let tempratureChecker = "Ads"
+
+            let dataCounter = dbo.collection(tempratureChecker).find({
+                'ActivityName': req.body.ActivityName
+            }).toArray();
+            dataCounter.then((data) => {
+                if (isEmpty(data)) {
+                    //Create New
+                    var ads={
+                        "1":req.body.one,
+                        "2":req.body.two,
+                        "3":req.body.three,
+                        "4":req.body.four,
+                        "5":req.body.five,
+                        "6":req.body.six
+                    };
+
+                    let myObj = {
+                        ActivityName: req.body.ActivityName,
+                        Ads: ads
+                    };
+
+                    dbo.collection(tempratureChecker).insertOne(myObj, (err, result) => {
+                        if (err)
+                            res.json({
+                                status: "0",
+                                message: "Inserting fail in " + tempratureChecker
+                            });
+                        else {
+                            res.json({
+                                status: "1",
+                                message: "Data added successfully in " + tempratureChecker
+                            });
+                        }
+                    });
+                } else {
+
+                    var ads={
+                        "1":req.body.one,
+                        "2":req.body.two,
+                        "3":req.body.three,
+                        "4":req.body.four,
+                        "5":req.body.five,
+                        "6":req.body.six
+                    };
+
+                    dbo.collection(tempratureChecker).updateOne(
+                        {
+                            'ActivityName': req.body.ActivityName
+                        },
+                        {
+                            $set: {
+                                "Ads": ads
+                            }
+                        }
+                    ).then((result) => {
+
+                        if (result['result']['n'] == 1)
+                            res.json({
+                                status: "1",
+                                message: "Data updated successfully in " + tempratureChecker
+                            });
+                        else
+                            res.json({
+                                status: "0",
+                                message: "Updating fail in " + tempratureChecker
+                            });
+                    }).catch((err) => {
+                        res.json({
+                            status: "0",
+                            message: "Updating fail in " + tempratureChecker
+                        });
+                    });
+                }
+            });
+
+        })
+
     }
 });
 
