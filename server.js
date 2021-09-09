@@ -323,85 +323,12 @@ client.connect((err, db) => {
 
         });
 
-        app.post('/adsStart',(req,res) => {
+        app.post('/adsLayout',(req,res) => {
 
             let tempratureChecker = "Ads"
 
             let dataCounter = dbo.collection(tempratureChecker).find({
-                'ActivityName': req.body.ActivityName
-            }).toArray();
-            dataCounter.then((data) => {
-                if (isEmpty(data)) {
-                    //Create New
-                    var ads={
-                        "1":req.body.one,
-                        "2":req.body.two,
-                        "3":req.body.three
-                    };
-
-                    let myObj = {
-                        ActivityName: req.body.ActivityName,
-                        Ads: ads
-                    };
-
-                    dbo.collection(tempratureChecker).insertOne(myObj, (err, result) => {
-                        if (err)
-                            res.json({
-                                status: "0",
-                                message: "Inserting fail in " + tempratureChecker
-                            });
-                        else {
-                            res.json({
-                                status: "1",
-                                message: "Data added successfully in " + tempratureChecker
-                            });
-                        }
-                    });
-                } else {
-
-                    var ads={
-                        "1":req.body.one,
-                        "2":req.body.two,
-                        "3":req.body.three
-                    };
-
-                    dbo.collection(tempratureChecker).updateOne(
-                        {
-                            'ActivityName': req.body.ActivityName
-                        },
-                        {
-                            $set: {
-                                "Ads": ads
-                            }
-                        }
-                    ).then((result) => {
-
-                        if (result['result']['n'] == 1)
-                            res.json({
-                                status: "1",
-                                message: "Data updated successfully in " + tempratureChecker
-                            });
-                        else
-                            res.json({
-                                status: "0",
-                                message: "Updating fail in " + tempratureChecker
-                            });
-                    }).catch((err) => {
-                        res.json({
-                            status: "0",
-                            message: "Updating fail in " + tempratureChecker
-                        });
-                    });
-                }
-            });
-
-        })
-
-        app.post('/adsCity',(req,res) => {
-
-            let tempratureChecker = "Ads"
-
-            let dataCounter = dbo.collection(tempratureChecker).find({
+                'AppName': req.body.AppName,
                 'ActivityName': req.body.ActivityName
             }).toArray();
             dataCounter.then((data) => {
@@ -417,6 +344,7 @@ client.connect((err, db) => {
                     };
 
                     let myObj = {
+                        AppName: req.body.AppName,
                         ActivityName: req.body.ActivityName,
                         Ads: ads
                     };
@@ -447,6 +375,7 @@ client.connect((err, db) => {
 
                     dbo.collection(tempratureChecker).updateOne(
                         {
+                            'AppName': req.body.AppName,
                             'ActivityName': req.body.ActivityName
                         },
                         {
