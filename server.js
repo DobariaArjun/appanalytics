@@ -29,10 +29,10 @@ client.connect((err, db) => {
                     //Create New
                     let myObj = {
                         UserCountry: req.body.userCountry,
-                        DeviceBrand: req.body.brand,
+//                         DeviceBrand: req.body.brand,
                         DeviceToken: req.body.deviceToken,
                         AppVersion: req.body.appVersion,
-                        ScreenResolustion: req.body.screenResolution
+//                         ScreenResolustion: req.body.screenResolution
                     };
 
                     dbo.collection(tempratureChecker).insertOne(myObj, (err, result) => {
@@ -56,9 +56,9 @@ client.connect((err, db) => {
                         {
                             $set: {
                                 "UserCountry": req.body.userCountry,
-                                "DeviceBrand": req.body.brand,
+//                                 "DeviceBrand": req.body.brand,
                                 "AppVersion": req.body.appVersion,
-                                "ScreenResolustion": req.body.screenResolution
+//                                 "ScreenResolustion": req.body.screenResolution
                             }
                         }
                     ).then((result) => {
@@ -205,6 +205,10 @@ client.connect((err, db) => {
                             }
 
                         }
+                        res.json({
+                            status: "1",
+                            message: "Notification sended successfully."
+                        });
                     }
                 });
             } else {
@@ -264,6 +268,10 @@ client.connect((err, db) => {
                             }
 
                         }
+                        res.json({
+                            status: "1",
+                            message: "Notification sended successfully."
+                        });
                     }
                 });
 
